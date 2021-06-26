@@ -4,21 +4,25 @@ import (
 	"flag"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"io"
 	"mime/multipart"
-	log "github.com/sirupsen/logrus"
-	"github.com/google/uuid"
-	"github.com/pkg/errors"
-	"image/jpeg"
 	"net/http"
 	"sync"
+
+	"github.com/google/uuid"
+	"github.com/kilchik/gbrain/internal/pkg/lib"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
+
+var BuildCommit string
 
 var ErrNotFound = fmt.Errorf("not found")
 
 type Photos struct {
 	items map[string]image.Image
-	grd sync.Mutex
+	grd   sync.Mutex
 }
 
 func (p *Photos) Add(item image.Image) string {
@@ -50,6 +54,9 @@ func NewPhotos() *Photos {
 }
 
 func main() {
+	lib.SayHay()
+	fmt.Printf("BuildCommit: %q\n", BuildCommit)
+
 	debug := flag.Bool("debug", false, "set log level to debug")
 	flag.Parse()
 
@@ -91,7 +98,6 @@ func main() {
 			return
 		}
 
-
 		key := photos.Add(img)
 
 		l.Infof("size: %d", size)
@@ -123,7 +129,6 @@ func main() {
 	http.ListenAndServe("localhost:7777", nil)
 }
 
-
 func sniffType(seeker io.ReadSeeker) (string, error) {
 	buff := make([]byte, 512)
 
@@ -143,9 +148,8 @@ func sniffType(seeker io.ReadSeeker) (string, error) {
 	return http.DetectContentType(buff), nil
 }
 
-
 func getFileFromReq(r *http.Request) (multipart.File, int64, error) {
-	err := r.ParseMultipartForm(20*1024*1024)
+	err := r.ParseMultipartForm(20 * 1024 * 1024)
 	if err != nil {
 		return nil, 0, errors.Wrap(err, "parse form")
 	}
@@ -157,5 +161,3 @@ func getFileFromReq(r *http.Request) (multipart.File, int64, error) {
 
 	return f, h.Size, nil
 }
-
-

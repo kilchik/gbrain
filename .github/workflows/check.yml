@@ -4,6 +4,8 @@ on:
     branches:
       - main
   push:
+    branches:
+      - main
 jobs:
   golangci:
     name: lint
