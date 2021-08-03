@@ -55,7 +55,7 @@ func NewPhotos() *Photos {
 
 func main() {
 	lib.SayHay()
-	fmt.Printf("BuildCommit: %q\n", BuildCommit)
+	fmt.Printf("BuildCommittt: %q\n", BuildCommit)
 
 	debug := flag.Bool("debug", false, "set log level to debug")
 	flag.Parse()
